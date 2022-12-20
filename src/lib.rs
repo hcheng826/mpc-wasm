@@ -1,12 +1,13 @@
 mod utils;
 
 use wasm_bindgen::prelude::*;
+extern crate web_sys;
 
-// When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
-// allocator.
-#[cfg(feature = "wee_alloc")]
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
 
 #[wasm_bindgen]
 extern {
@@ -16,4 +17,12 @@ extern {
 #[wasm_bindgen]
 pub fn greet() {
     alert("Hello, mpc-wasm!");
+}
+
+#[wasm_bindgen]
+pub fn sign(local_share: JsValue, message: JsValue){
+    log!("sign called!");
+    // let example = serde_wasm_bindgen::from_value(val).unwrap();
+    log!("local share: {:?}", local_share);
+    log!("message: {:?}", message);
 }
