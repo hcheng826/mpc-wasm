@@ -7,6 +7,7 @@ use structopt::StructOpt;
 use curv::arithmetic::Converter;
 use curv::BigInt;
 
+mod multi_party_ecdsa;
 use multi_party_ecdsa::protocols::multi_party_ecdsa::gg_2020::state_machine::sign::{
     OfflineStage, SignManual,
 };

@@ -8,21 +8,24 @@ edition = "2018"
 crate-type = ["cdylib", "rlib"]
 
 [features]
-default = ["console_error_panic_hook"]
+default = ["console_error_panic_hook", "curv-kzen/rust-gmp-kzen"]
+cclst = ["class_group"]
 
 [dependencies]
 wasm-bindgen = "0.2.63"
 serde = { version = "1.0", features = ["derive"] }
 serde-wasm-bindgen = "0.4"
 anyhow = "1"
-futures = "0.3"
-structopt = "0.3"
+subtle = { version = "2" }
+zeroize = "1"
 round-based = { version = "0.1.4", features = [] }
 curv-kzen = { version = "0.9", default-features = false }
 getrandom = { version = "0.2", features = ["js"] }
-secp256k1 = { version = "0.20", features = ["global-context"]}
-secp256k1-sys = "0.4.2"
-
+centipede = { version = "0.3", default-features = false }
+zk-paillier = { version = "0.4.3", default-features = false }
+thiserror = "1.0.23"
+derivative = "2"
+sha2 = "0.9"
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
 # all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
@@ -34,8 +37,63 @@ console_error_panic_hook = { version = "0.1.6", optional = true }
 # allocator, however.
 wee_alloc = { version = "0.4.5", optional = true }
 
+[dependencies.paillier]
+version = "0.4.2"
+package = "kzen-paillier"
+default-features = false
+
+[dependencies.class_group]
+version = "0.6"
+default-features = false
+optional = true
+
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"
+criterion = "0.3"
+aes-gcm = "0.9.4"
+hex = "0.4"
+tokio = { version = "1", default-features = false, features = ["macros"] }
+futures = "0.3"
+rocket = { version = "0.5.0-rc.1", default-features = false, features = ["json"] }
+reqwest = { version = "0.11", features = ["blocking", "json"] }
+uuid = { version = "0.8", features = ["v4"] }
+serde_json = "1.0"
+rand = "0.8"
+surf = "2"
+async-sse = "5"
+anyhow = "1"
+structopt = "0.3"
+secp256k1 = { version = "0.20", features = ["global-context"]}
+
+thiserror = "1.0.23"
+round-based = { version = "0.1.4", features = ["dev"] }
+
+[[bench]]
+name = "cclst_keygen"
+path = "benches/two_party_ecdsa/cclst_2019/keygen.rs"
+required-features = ["cclst"]
+harness = false
+
+[[bench]]
+name = "cclst_sign"
+path = "benches/two_party_ecdsa/cclst_2019/sign.rs"
+required-features = ["cclst"]
+harness = false
+
+[[bench]]
+name = "gg18"
+path = "benches/multi_party_ecdsa/gg18/keygen.rs"
+harness = false
+
+[[bench]]
+name = "lindel2017_keygen"
+path = "benches/two_party_ecdsa/lindell_2017/keygen.rs"
+harness = false
+
+[[bench]]
+name = "lindel2017_sign"
+path = "benches/two_party_ecdsa/lindell_2017/sign.rs"
+harness = false
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.
