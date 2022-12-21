@@ -1,6 +1,7 @@
 mod utils;
 
 use wasm_bindgen::prelude::*;
+mod gg20_signing;
 extern crate web_sys;
 
 macro_rules! log {
@@ -20,9 +21,17 @@ pub fn greet() {
 }
 
 #[wasm_bindgen]
-pub fn sign(local_share: JsValue, message: JsValue){
+pub fn sign(message: JsValue, local_share: JsValue, sm_manager_url: JsValue, room_id: JsValue) {
     log!("sign called!");
-    // let example = serde_wasm_bindgen::from_value(val).unwrap();
-    log!("local share: {:?}", local_share);
-    log!("message: {:?}", message);
+
+    let data_to_sign = serde_wasm_bindgen::from_value::<String>(message).unwrap();
+    let local_share = serde_wasm_bindgen::from_value::<String>(local_share).unwrap().as_bytes();
+    let parties = vec![1, 2];
+    let sm_manager_url = serde_wasm_bindgen::from_value::<String>(sm_manager_url).unwrap();
+    let room_id = serde_wasm_bindgen::from_value::<String>(room_id).unwrap();
+
+    log!("data_to_sign: {:?}", data_to_sign);
+    log!("parties: {:?}", parties);
+    log!("sm_manager_url: {:?}", sm_manager_url);
+    log!("room_id: {:?}", room_id);
 }
