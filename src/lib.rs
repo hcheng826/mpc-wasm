@@ -1,6 +1,7 @@
 mod utils;
 mod gg20_signing;
 use wasm_bindgen::prelude::*;
+mod http;
 
 macro_rules! log {
     ( $( $t:tt )* ) => {
@@ -50,4 +51,12 @@ pub async fn sm_sign(
     log!("{:?}", result);
 
     Ok(JsValue::from(result.unwrap()))
+}
+
+#[wasm_bindgen]
+pub async fn http() -> Result<JsValue, JsValue> {
+    let res = http::http_test().await;
+
+    log!("http: {:?}", res);
+    Ok(JsValue::from(res.unwrap()))
 }

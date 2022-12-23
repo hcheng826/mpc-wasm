@@ -4,6 +4,7 @@ import axios from "axios";
 
 const theOtherShareButton = document.getElementById("the-other-share-button");
 const smButton = document.getElementById("sm-button");
+const httpTestButton = document.getElementById("http-test");
 
 const SERVICE_URL = "http://localhost:8002";
 const SM_MANAGER_URL = "http://localhost:8000";
@@ -18,11 +19,15 @@ smButton.addEventListener("click", async (event) => {
     console.log("result in index.js", await wasm.sm_sign(message, localShare, SM_MANAGER_URL, room_id));
 })
 
-theOtherShareButton.addEventListener("click", (event) => {
-    // axios.get(SERVICE_URL).then(res => console.log(res));
+theOtherShareButton.addEventListener("click", async (event) => {
     const message = document.getElementById("message").value;
-    axios.post(`${SERVICE_URL}/sign`, {
+    await axios.post(`${SERVICE_URL}/sign`, {
         msg: message,
         room_id: room_id
     });
+})
+
+httpTestButton.addEventListener("click", async (event) => {
+    let res = await wasm.http();
+    console.log("res: ", res);
 })
