@@ -51,6 +51,7 @@ version = "0.3"
 features = [
   "console",
   'Headers',
+  'ReadableStream',
   'Request',
   'RequestInit',
   'RequestMode',

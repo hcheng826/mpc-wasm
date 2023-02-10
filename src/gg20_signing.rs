@@ -1,10 +1,18 @@
-use serde_json::Value;
-use std::convert::TryInto;
 use anyhow::{anyhow, Context, Result};
+use futures::prelude::*;
 use futures::{Sink, Stream, StreamExt, TryStreamExt};
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
-use round_based::Msg;
 use round_based::async_runtime::AsyncProtocol;
+use round_based::Msg;
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde_json::Value;
+use wasm_streams::readable::{IntoStream, IntoAsyncRead};
+use std::convert::TryInto;
+use std::io::{Error, ErrorKind};
+use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
+use wasm_bindgen_futures::JsFuture;
+use wasm_streams::ReadableStream;
+use web_sys::{Request, RequestInit, RequestMode, Response, Window};
 
 macro_rules! log {
     ( $( $t:tt )* ) => {
@@ -26,9 +34,10 @@ pub async fn sign(
     // log!("{:?}", local_share);
 
     // "::<String>" is a guess below
-    let (i, incoming, outgoing) = join_computation::<String>(address.clone(), &format!("{}-offline", room))
-        .await
-        .context("join offline computation")?;
+    let (i, incoming, outgoing) =
+        join_computation::<String>(address.clone(), &format!("{}-offline", room))
+            .await
+            .context("join offline computation")?;
 
     Ok("test".to_string())
 
@@ -84,7 +93,6 @@ pub async fn sign(
     // Ok(signature)
 }
 
-
 pub async fn join_computation<M>(
     address: surf::Url,
     room_id: &str,
@@ -135,13 +143,57 @@ where
     Ok((index, incoming, outgoing))
 }
 
+// pub struct SmClient2<'a> {
+//     base_url: &'a str,
+//     window: Window
+// }
+
+// impl SmClient2<'_> {
+//     pub fn new(address: surf::Url, room_id: &str) -> Result<Self> {
+//         Ok(Self {
+//             base_url: &format!("http://localhost:8000/rooms/{}", room_id),
+//             window: web_sys::window().unwrap()
+//         })
+//     }
+//     pub async fn issue_index(&self) -> Result<u16> {
+//         Ok(1)
+//     }
+//     pub async fn broadcast(&self, message: &str) -> Result<()> {
+//         Ok(())
+//     }
+//     // pub async fn subscribe(&self) -> Result<impl Stream<Item = Result<String>>> {
+//     pub async fn subscribe(&self) -> Result<IntoAsyncRead, JsValue> {
+//         let mut opts = RequestInit::new();
+//         opts.method("GET");
+//         opts.mode(RequestMode::Cors);
+
+//         let url = format!("{}/subscribe", self.base_url);
+//         let request = Request::new_with_str_and_init(&url, &opts)?;
+
+//         let resp_value = JsFuture::from(self.window.fetch_with_request(&request)).await?;
+
+//         // `resp_value` is a `Response` object.
+//         assert!(resp_value.is_instance_of::<Response>());
+//         let resp: Response = resp_value.dyn_into().unwrap();
+
+//         let raw_body = resp.body().unwrap_throw();
+//         let body = ReadableStream::from_raw(raw_body.dyn_into().unwrap_throw());
+
+//         // let stream = body.into_async_read();
+//         let stream = body.into_async_read();
+
+//         // while let Some(Ok(chunk)) = stream.poll_read().await {
+//         //     console::log_1(&chunk);
+//         // }
+//         Ok(stream)
+//     }
+// }
 pub struct SmClient {
     http_client: surf::Client,
 }
 
 impl SmClient {
     pub fn new(address: surf::Url, room_id: &str) -> Result<Self> {
-
         log!("SmClient: {:?}", room_id);
         log!("SmClient: {:?}", address);
 

@@ -1,7 +1,8 @@
 mod utils;
 mod gg20_signing;
 use wasm_bindgen::prelude::*;
-mod http;
+mod http_test;
+mod stream_test;
 
 macro_rules! log {
     ( $( $t:tt )* ) => {
@@ -36,7 +37,7 @@ pub async fn sm_sign(
 
     // log!("data_to_sign: {:?}", data_to_sign);
     // log!("parties: {:?}", parties);
-    // log!("sm_manager_url: {:?}", sm_manager_url);
+    log!("sm_manager_url: {:?}", sm_manager_url);
     // log!("room_id: {:?}", room_id);
     // log!("local_share2: {:?}", local_share2);
     let result = gg20_signing::sign(
@@ -48,15 +49,23 @@ pub async fn sm_sign(
     )
     .await;
 
-    log!("{:?}", result);
+    log!("result: {:?}", result);
 
     Ok(JsValue::from(result.unwrap()))
 }
 
 #[wasm_bindgen]
 pub async fn http() -> Result<JsValue, JsValue> {
-    let res = http::http_test().await;
+    let res = http_test::http_test().await;
 
     log!("http: {:?}", res);
     Ok(JsValue::from(res.unwrap()))
+}
+
+#[wasm_bindgen]
+pub async fn stream() -> Result<JsValue, JsValue> {
+    let res = stream_test::stream_test().await;
+
+    log!("http: {:?}", res);
+    Ok(JsValue::from("stream_test"))
 }

@@ -5,6 +5,7 @@ import axios from "axios";
 const theOtherShareButton = document.getElementById("the-other-share-button");
 const smButton = document.getElementById("sm-button");
 const httpTestButton = document.getElementById("http-test");
+const streamTestButton = document.getElementById("stream-test");
 
 const SERVICE_URL = "http://localhost:8002";
 const SM_MANAGER_URL = "http://localhost:8000";
@@ -29,5 +30,10 @@ theOtherShareButton.addEventListener("click", async (event) => {
 
 httpTestButton.addEventListener("click", async (event) => {
     let res = await wasm.http();
+    console.log("res: ", res);
+})
+
+streamTestButton.addEventListener("click", async (event) => {
+    let res = await wasm.stream();
     console.log("res: ", res);
 })
